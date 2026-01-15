@@ -17,7 +17,47 @@ class SkpdDashboardController extends Controller
      */
     public function dashboard()
     {
-        return view('skpd.dashboard');
+        $user = Auth::user();
+        
+        // Get SKPD ID from user
+        $skpdId = $user->skpdAsUser->id ?? $user->skpdAsKepala->id ?? null;
+        
+        if (!$skpdId) {
+            // If no SKPD found, show empty statistics
+            $totalPengajuan = 0;
+            $sedangProses = 0;
+            $selesai = 0;
+            $suratAktif = 0;
+            $recentActivities = collect();
+        } else {
+            // Get statistics from database for this SKPD
+            $totalPengajuan = \App\Models\Pengajuan::where('skpd_id', $skpdId)->count();
+            $sedangProses = \App\Models\Pengajuan::where('skpd_id', $skpdId)
+                ->where('status_bpkpad', 1)
+                ->count();
+            $selesai = \App\Models\Pengajuan::where('skpd_id', $skpdId)
+                ->where('status_bpkpad', 2)
+                ->count();
+            $suratAktif = \App\Models\Pengajuan::where('skpd_id', $skpdId)
+                ->where('status_operator', 2)
+                ->where('status_kepala_skpd', 2)
+                ->count();
+
+            // Get recent activities (last 10 pengajuan)
+            $recentActivities = \App\Models\Pengajuan::with(['user'])
+                ->where('skpd_id', $skpdId)
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get();
+        }
+
+        return view('skpd.dashboard', compact(
+            'totalPengajuan',
+            'sedangProses',
+            'selesai',
+            'suratAktif',
+            'recentActivities'
+        ));
     }
 
     /**

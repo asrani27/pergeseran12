@@ -142,7 +142,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Total Pengajuan</p>
-                    <p class="text-2xl font-bold text-gray-900">24</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $totalPengajuan }}</p>
                 </div>
             </div>
         </div>
@@ -155,7 +155,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Sedang Proses</p>
-                    <p class="text-2xl font-bold text-gray-900">8</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $sedangProses }}</p>
                 </div>
             </div>
         </div>
@@ -168,7 +168,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Selesai</p>
-                    <p class="text-2xl font-bold text-gray-900">15</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $selesai }}</p>
                 </div>
             </div>
         </div>
@@ -181,7 +181,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Surat Aktif</p>
-                    <p class="text-2xl font-bold text-gray-900">12</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $suratAktif }}</p>
                 </div>
             </div>
         </div>
@@ -220,39 +220,51 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Aktivitas Terbaru</h3>
             <div class="space-y-4">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-check text-green-600 text-xs"></i>
+                @forelse($recentActivities as $activity)
+                    @php
+                        $iconClass = 'bg-blue-100';
+                        $icon = 'fa-file';
+                        $iconColor = 'text-blue-600';
+                        
+                        if ($activity->status_bpkpad == 2) {
+                            $iconClass = 'bg-green-100';
+                            $icon = 'fa-check';
+                            $iconColor = 'text-green-600';
+                        } elseif ($activity->status_bpkpad == 3) {
+                            $iconClass = 'bg-red-100';
+                            $icon = 'fa-times';
+                            $iconColor = 'text-red-600';
+                        } elseif ($activity->status_bpkpad == 1) {
+                            $iconClass = 'bg-yellow-100';
+                            $icon = 'fa-clock';
+                            $iconColor = 'text-yellow-600';
+                        }
+                        
+                        $statusText = 'Diajukan';
+                        if ($activity->status_bpkpad == 2) {
+                            $statusText = 'Disetujui';
+                        } elseif ($activity->status_bpkpad == 3) {
+                            $statusText = 'Ditolak';
+                        } elseif ($activity->status_bpkpad == 1) {
+                            $statusText = 'Dalam Proses';
+                        }
+                    @endphp
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 {{ $iconClass }} rounded-full flex items-center justify-center">
+                                <i class="fas {{ $icon }} {{ $iconColor }} text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-gray-900">Pengajuan #{{ $activity->id }} - {{ $statusText }}</p>
+                            <p class="text-xs text-gray-500">{{ $activity->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-gray-900">Pengajuan pergeseseran disetujui</p>
-                        <p class="text-xs text-gray-500">2 jam yang lalu</p>
+                @empty
+                    <div class="text-center text-gray-500 py-4">
+                        <p>Belum ada aktivitas</p>
                     </div>
-                </div>
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-file text-blue-600 text-xs"></i>
-                        </div>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-gray-900">Surat masuk baru</p>
-                        <p class="text-xs text-gray-500">5 jam yang lalu</p>
-                    </div>
-                </div>
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-clock text-yellow-600 text-xs"></i>
-                        </div>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-gray-900">Pengajuan sedang diproses</p>
-                        <p class="text-xs text-gray-500">1 hari yang lalu</p>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </div>

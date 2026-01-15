@@ -46,6 +46,22 @@ class SkpdDashboardController extends Controller
     }
 
     /**
+     * Display the specified pengajuan.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showPengajuan($id)
+    {
+        $pengajuan = \App\Models\Pengajuan::with(['user', 'skpd', 'program', 'kegiatan', 'subkegiatan'])
+            ->where('id', $id)
+            ->where('user_id', Auth::user()->id)
+            ->firstOrFail();
+
+        return view('skpd.pengajuan.show', compact('pengajuan'));
+    }
+
+    /**
      * Display the create pengajuan page.
      *
      * @return \Illuminate\Http\Response

@@ -36,7 +36,7 @@
             </div>
             <div class="flex-1">
                 <p class="text-white font-medium text-sm">{{ Auth::user()->name ?? 'Administrator' }}</p>
-                <p class="text-blue-200 text-xs">{{ Auth::user()->email ?? 'admin@bpkpad.go.id' }}</p>
+                <p class="text-blue-200 text-xs">{{ ucfirst(Auth::user()->role ?? 'superadmin') }}</p>
             </div>
         </div>
     </div>

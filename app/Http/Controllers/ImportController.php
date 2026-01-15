@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\SshImport;
 use App\Jobs\ImportDataJob;
+use App\Models\Ssh;
 use App\Models\RiwayatImport;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ImportController extends Controller
 {
@@ -43,4 +46,32 @@ class ImportController extends Controller
         return back()->with('success', 'Import sedang diproses di belakang layar');
     }
 
+    public function ssh()
+    {
+        $sshData = Ssh::orderBy('tahun', 'desc')
+            ->orderBy('jenis')
+            ->orderBy('kode_kelompok')
+            ->orderBy('kode_barang')
+            ->get();
+
+        return view('superadmin.import.ssh', compact('sshData'));
+    }
+
+    public function sshStore(Request $request)
+    {
+        $request->validate([
+            'tahun' => 'required|integer|min:2020|max:2030',
+            'jenis' => 'required|in:SSH,ASB,HSPK',
+            'file' => 'required|file|mimes:xlsx,xls|max:10240',
+        ]);
+
+        // Delete old data based on jenis and tahun
+        Ssh::where('jenis', $request->jenis)
+            ->where('tahun', $request->tahun)
+            ->delete();
+
+        Excel::import(new SshImport($request->jenis, $request->tahun), $request->file('file'));
+
+        return back()->with('success', 'Data berhasil diimport');
+    }
 }

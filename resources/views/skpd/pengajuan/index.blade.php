@@ -189,6 +189,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
+                                    <a href="{{ route('skpd.pengajuan.pergeseran', $item->id) }}" 
+                                       class="text-purple-600 hover:text-purple-900" title="Pergeseran">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                        </svg>
+                                    </a>
                                     <a href="{{ route('skpd.pengajuan.show', $item->id) }}" 
                                        class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,6 +205,40 @@
                                                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
                                     </a>
+                                    <!-- Print Dropdown -->
+                                    <div class="relative inline-block">
+                                        <button onclick="toggleDropdown('printDropdown{{ $item->id }}')" 
+                                                class="text-gray-600 hover:text-gray-900" title="Cetak Surat">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                        <div id="printDropdown{{ $item->id }}" 
+                                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                                            <div class="py-1">
+                                                <a href="{{ route('skpd.surat.pergeseran', $item->id) }}" 
+                                                   target="_blank"
+                                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    <i class="fas fa-file-pdf mr-2 text-red-500"></i>
+                                                    Surat Pergeseran
+                                                </a>
+                                                <a href="{{ route('skpd.surat.pernyataan', $item->id) }}" 
+                                                   target="_blank"
+                                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    <i class="fas fa-file-pdf mr-2 text-red-500"></i>
+                                                    Surat Pernyataan
+                                                </a>
+                                                <a href="{{ route('skpd.surat.keterangan', $item->id) }}" 
+                                                   target="_blank"
+                                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    <i class="fas fa-file-pdf mr-2 text-red-500"></i>
+                                                    Surat Keterangan
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <a href="{{ route('skpd.pengajuan.edit', $item->id) }}" 
                                        class="text-yellow-600 hover:text-yellow-900" title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,6 +301,30 @@
 
 @push('scripts')
 <script>
+// Toggle dropdown visibility
+function toggleDropdown(dropdownId) {
+    // Close all other dropdowns first
+    document.querySelectorAll('[id^="printDropdown"]').forEach(dropdown => {
+        if (dropdown.id !== dropdownId) {
+            dropdown.classList.add('hidden');
+        }
+    });
+    
+    // Toggle the clicked dropdown
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('[id^="printDropdown"]') && 
+        !event.target.closest('button[onclick^="toggleDropdown"]')) {
+        document.querySelectorAll('[id^="printDropdown"]').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+    }
+});
+
 function deletePengajuan(id) {
     if (confirm('Apakah Anda yakin ingin menghapus pengajuan ini?')) {
         // Get CSRF token

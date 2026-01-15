@@ -103,7 +103,8 @@ class SkpdController extends Controller
             'name' => 'Pimpinan ' . $skpd->nama,
             'email' => 'pimpinan_' . $cleanKodeSkpd . '@skpd.local',
             'username' => 'pimpinan_' . $cleanKodeSkpd,
-            'password' => Hash::make($newPassword)
+            'password' => Hash::make($newPassword),
+            'role' => 'pimpinan',
         ]);
 
         // Update SKPD with kepala_id

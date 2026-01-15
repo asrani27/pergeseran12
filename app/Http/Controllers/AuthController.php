@@ -80,6 +80,71 @@ class AuthController extends Controller
      */
     public function dashboard()
     {
-        return view('superadmin.dashboard');
+        // Get statistics from database
+        $totalPergeseran = \App\Models\Pengajuan::count();
+        $menungguVerifikasi = \App\Models\Pengajuan::where('status_bpkpad', 1)->count();
+        $disetujui = \App\Models\Pengajuan::where('status_bpkpad', 2)->count();
+        $ditolak = \App\Models\Pengajuan::where('status_bpkpad', 3)->count();
+
+        // Get recent activities (last 10 pengajuan)
+        $recentActivities = \App\Models\Pengajuan::with(['user', 'skpd'])
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Get monthly data for chart (last 12 months)
+        $monthlyData = \App\Models\Pengajuan::selectRaw('MONTH(created_at) as month, YEAR(created_at) as year, COUNT(*) as count')
+            ->where('created_at', '>=', now()->subMonths(12))
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        // Calculate percentage changes from previous month
+        $lastMonthCount = \App\Models\Pengajuan::whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count();
+        
+        $thisMonthCount = \App\Models\Pengajuan::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+        
+        $totalPercentage = $lastMonthCount > 0 ? round((($thisMonthCount - $lastMonthCount) / $lastMonthCount) * 100, 0) : 0;
+        
+        $lastMonthApproved = \App\Models\Pengajuan::where('status_bpkpad', 2)
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count();
+        
+        $thisMonthApproved = \App\Models\Pengajuan::where('status_bpkpad', 2)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+        
+        $approvedPercentage = $lastMonthApproved > 0 ? round((($thisMonthApproved - $lastMonthApproved) / $lastMonthApproved) * 100, 0) : 0;
+        
+        $lastMonthRejected = \App\Models\Pengajuan::where('status_bpkpad', 3)
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count();
+        
+        $thisMonthRejected = \App\Models\Pengajuan::where('status_bpkpad', 3)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+        
+        $rejectedPercentage = $lastMonthRejected > 0 ? round((($thisMonthRejected - $lastMonthRejected) / $lastMonthRejected) * 100, 0) : 0;
+
+        return view('superadmin.dashboard', compact(
+            'totalPergeseran',
+            'menungguVerifikasi',
+            'disetujui',
+            'ditolak',
+            'recentActivities',
+            'monthlyData',
+            'totalPercentage',
+            'approvedPercentage',
+            'rejectedPercentage'
+        ));
     }
 }

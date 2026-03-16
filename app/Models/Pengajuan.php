@@ -22,9 +22,7 @@ class Pengajuan extends Model
         'program_id',
         'kegiatan_id',
         'subkegiatan_id',
-        'status_operator',
-        'status_kepala_skpd',
-        'status_bpkpad',
+        'status',
         'ket_kepala_skpd',
         'ket_bpkpad',
         'kode_program',
@@ -38,9 +36,7 @@ class Pengajuan extends Model
 
     protected $casts = [
         'tanggal' => 'date',
-        'status_operator' => 'integer',
-        'status_kepala_skpd' => 'integer',
-        'status_bpkpad' => 'integer',
+        'status' => 'integer',
         'tahun' => 'integer',
     ];
 

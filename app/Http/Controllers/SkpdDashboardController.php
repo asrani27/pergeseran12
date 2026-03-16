@@ -18,10 +18,10 @@ class SkpdDashboardController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        
+
         // Get SKPD ID from user
         $skpdId = $user->skpdAsUser->id ?? $user->skpdAsKepala->id ?? null;
-        
+
         if (!$skpdId) {
             // If no SKPD found, show empty statistics
             $totalPengajuan = 0;
@@ -33,14 +33,14 @@ class SkpdDashboardController extends Controller
             // Get statistics from database for this SKPD
             $totalPengajuan = \App\Models\Pengajuan::where('skpd_id', $skpdId)->count();
             $sedangProses = \App\Models\Pengajuan::where('skpd_id', $skpdId)
-                ->where('status_bpkpad', 1)
+                ->where('status', 1)
                 ->count();
             $selesai = \App\Models\Pengajuan::where('skpd_id', $skpdId)
-                ->where('status_bpkpad', 2)
+                ->where('status', 3)
                 ->count();
             $suratAktif = \App\Models\Pengajuan::where('skpd_id', $skpdId)
-                ->where('status_operator', 2)
-                ->where('status_kepala_skpd', 2)
+                ->where('status', 2)
+                ->where('status', 1)
                 ->count();
 
             // Get recent activities (last 10 pengajuan)
@@ -191,8 +191,7 @@ class SkpdDashboardController extends Controller
             $n->kode_subkegiatan = $subkegiatan->kode ?? '';
             $n->nama_subkegiatan = $subkegiatan->nama ?? '';
             $n->tahun = date('Y');
-            $n->status_operator = 1;
-            $n->status_kepala_skpd = 0;
+            $n->status = 0;
             $n->save();
 
             Log::info('Pengajuan saved successfully with ID: ' . $n->id);
@@ -900,15 +899,13 @@ class SkpdDashboardController extends Controller
             }
 
             // Update status
-            $pengajuan->status_operator = 2;
-            $pengajuan->status_kepala_skpd = 1;
+            $pengajuan->status = 1;
             $pengajuan->save();
 
             Log::info('Pergeseran sent for approval:', [
                 'pengajuan_id' => $pengajuan->id,
                 'user_id' => Auth::user()->id,
-                'status_operator' => 2,
-                'status_kepala_skpd' => 1
+                'status' => 1
             ]);
 
             return response()->json([

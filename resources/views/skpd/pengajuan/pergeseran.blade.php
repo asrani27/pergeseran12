@@ -93,8 +93,8 @@
                         </div>
                     </div>
                     <button onclick="openModal()"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors {{ $pengajuan->status_operator == 2 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                        {{ $pengajuan->status_operator == 2 ? 'disabled' : '' }}>
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                        {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -172,8 +172,8 @@
                                             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ $formattedTotal }}</td>
                                             <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
                                                 <button onclick="deleteSebelum({{ $item->id }})"
-                                                    class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status_operator == 2 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                                    {{ $pengajuan->status_operator == 2 ? 'disabled' : '' }}>
+                                                    class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                                    {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -217,8 +217,8 @@
                         </div>
                     </div>
                     <button onclick="openSesudahModal()"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors {{ $pengajuan->status_operator == 2 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                        {{ $pengajuan->status_operator == 2 ? 'disabled' : '' }}>
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                        {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -296,8 +296,8 @@
                                             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ $formattedTotal }}</td>
                                             <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
                                                 <button onclick="deleteSesudah({{ $item->id }})"
-                                                    class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status_operator == 2 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                                    {{ $pengajuan->status_operator == 2 ? 'disabled' : '' }}>
+                                                    class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                                    {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -388,8 +388,10 @@
                         <span class="text-sm font-medium text-gray-600">Aksi</span>
                     </div>
                     <button onclick="kirimPergeseran()"
-                        class="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors {{ $pengajuan->status_operator == 2 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                        {{ $pengajuan->status_operator == 2 ? 'disabled' : '' }}>
+                        class="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors {{ in_array($pengajuan->status, [1, 2, 3, 4]) ? 'opacity-50 cursor-not-allowed' : '' }}"
+                        {{ in_array($pengajuan->status, [1, 2, 3, 4]) ? 'disabled' : '' }}
+                        data-total-sebelum="{{ $totalSebelum }}"
+                        data-total-sesudah="{{ $totalSesudah }}">
                         Kirim Pergeseran
                     </button>
                 </div>
@@ -608,6 +610,29 @@
 
         // Function to send pergeseran
         function kirimPergeseran() {
+            // Get button element
+            const button = document.querySelector('button[onclick="kirimPergeseran()"]');
+            
+            // Get totals from data attributes
+            const totalSebelum = parseFloat(button.getAttribute('data-total-sebelum')) || 0;
+            const totalSesudah = parseFloat(button.getAttribute('data-total-sesudah')) || 0;
+            
+            // Validate that totals are equal
+            if (totalSebelum !== totalSesudah) {
+                // Format totals for display
+                const formatter = new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                });
+                
+                const formattedTotalSebelum = formatter.format(totalSebelum);
+                const formattedTotalSesudah = formatter.format(totalSesudah);
+                
+                alert('Total Sebelum dan Total Sesudah harus sama!\n\nTotal Sebelum: ' + formattedTotalSebelum + '\nTotal Sesudah: ' + formattedTotalSesudah);
+                return;
+            }
+            
             if (confirm('Apakah Anda yakin ingin mengirim pergeseran anggaran ini?')) {
                 $.ajax({
                     url: '/kirim-pergeseran',

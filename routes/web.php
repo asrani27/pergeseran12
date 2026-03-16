@@ -88,6 +88,9 @@ Route::prefix('bpkpad')->middleware('auth')->name('bpkpad.')->group(function () 
     Route::put('/profile', [BpkpadController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [BpkpadController::class, 'updatePassword'])->name('password.update');
     Route::get('/pergeseran/{id}', [BpkpadController::class, 'showPergeseran'])->name('pergeseran.show');
+    Route::get('/surat/pergeseran/{id}', [BpkpadController::class, 'cetakSuratPergeseran'])->name('surat.pergeseran');
+    Route::get('/surat/pernyataan/{id}', [BpkpadController::class, 'cetakSuratPernyataan'])->name('surat.pernyataan');
+    Route::get('/surat/keterangan/{id}', [BpkpadController::class, 'cetakSuratKeterangan'])->name('surat.keterangan');
 });
 
 // BPKPAD AJAX Routes (Protected)

@@ -51,7 +51,7 @@
                         </label>
                         <input type="text" id="nomor_surat" name="nomor_surat" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Masukkan nomor surat">
+                            placeholder="Masukkan nomor surat" value="{{ old('nomor_surat') }}">
                     </div>
 
                     <!-- Tanggal -->
@@ -61,7 +61,7 @@
                         </label>
                         <input type="date" id="tanggal" name="tanggal" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value="{{\Carbon\Carbon::today()->format('Y-m-d')}}">
+                            value="{{ old('tanggal', \Carbon\Carbon::today()->format('Y-m-d')) }}">
                     </div>
                 </div>
 
@@ -84,10 +84,10 @@
                     <select id="tipe_pengajuan" name="tipe_pengajuan" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Pilih Tipe Pengajuan Perubahan</option>
-                        <option value="1">Antar Objek</option>
-                        <option value="2">Antar Rincian Objek</option>
-                        <option value="3">Antar Sub Rincian Objek</option>
-                        <option value="4">Perubahan Uraian</option>
+                        <option value="1" {{ old('tipe_pengajuan') == '1' ? 'selected' : '' }}>Antar Objek</option>
+                        <option value="2" {{ old('tipe_pengajuan') == '2' ? 'selected' : '' }}>Antar Rincian Objek</option>
+                        <option value="3" {{ old('tipe_pengajuan') == '3' ? 'selected' : '' }}>Antar Sub Rincian Objek</option>
+                        <option value="4" {{ old('tipe_pengajuan') == '4' ? 'selected' : '' }}>Perubahan Uraian</option>
                     </select>
                 </div>
 
@@ -98,7 +98,7 @@
                     </label>
                     <input type="text" id="hal" name="hal"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Masukkan hal">
+                        placeholder="Masukkan hal" value="{{ old('hal') }}">
                 </div>
 
                 <!-- Kalimat Pengantar -->
@@ -108,7 +108,7 @@
                     </label>
                     <textarea id="pengantar" name="pengantar" rows="4"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Masukkan kalimat pengantar"></textarea>
+                        placeholder="Masukkan kalimat pengantar">{{ old('pengantar') }}</textarea>
                 </div>
 
                 <!-- Lampiran -->
@@ -118,7 +118,8 @@
                     </label>
                     <input type="file" id="lampiran" name="lampiran"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        accept=".pdf,.doc,.docx,.xls,.xlsx">
+                        accept=".pdf,.doc,.docx,.xls,.xlsx"
+                        value="{{ old('lampiran') }}">
                 </div>
 
                 <!-- Program, Kegiatan, Sub Kegiatan -->
@@ -136,7 +137,8 @@
                             <option value="{{$item->id}}" 
                                 data-kode-skpd="{{$item->kode_skpd}}" 
                                 data-kode-program="{{$item->kode}}" 
-                                data-tahun="{{$item->tahun}}">
+                                data-tahun="{{$item->tahun}}"
+                                {{ old('program') == $item->id ? 'selected' : '' }}>
                                 {{$item->kode}} - {{$item->nama}}
                             </option>
                             @endforeach
@@ -152,6 +154,9 @@
                         <select id="kegiatan" name="kegiatan" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Pilih Kegiatan</option>
+                            @if(old('kegiatan'))
+                            <option value="{{ old('kegiatan') }}" selected selected>Selected Kegiatan</option>
+                            @endif
                         </select>
                     </div>
 
@@ -163,6 +168,9 @@
                         <select id="subkegiatan" name="subkegiatan" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Pilih Sub Kegiatan</option>
+                            @if(old('subkegiatan'))
+                            <option value="{{ old('subkegiatan') }}" selected>Selected Sub Kegiatan</option>
+                            @endif
                         </select>
                     </div>
                 </div>

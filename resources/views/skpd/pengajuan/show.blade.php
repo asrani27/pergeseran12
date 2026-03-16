@@ -188,89 +188,40 @@
                         Status Pengajuan
                     </h3>
                 </div>
-                <div class="p-6 space-y-4">
-                    <!-- Status Operator -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Status Operator</label>
-                        @switch($pengajuan->status_operator)
-                            @case(1)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 w-full justify-center py-2">
-                                    Di Proses
-                                </span>
-                                @break
-                            @case(2)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 w-full justify-center py-2">
-                                    Selesai
-                                </span>
-                                @break
-                            @default
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-full justify-center py-2">
-                                    Unknown
-                                </span>
-                        @endswitch
-                    </div>
-                    
-                    <!-- Status Kepala SKPD -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Status Kepala SKPD</label>
-                        @switch($pengajuan->status_kepala_skpd)
-                            @case(0)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-full justify-center py-2">
-                                    Menunggu
-                                </span>
-                                @break
-                            @case(1)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 w-full justify-center py-2">
-                                    Di Proses
-                                </span>
-                                @break
-                            @case(2)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 w-full justify-center py-2">
-                                    Selesai
-                                </span>
-                                @break
-                            @case(3)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 w-full justify-center py-2">
-                                    Ditolak
-                                </span>
-                                @break
-                            @default
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-full justify-center py-2">
-                                    Unknown
-                                </span>
-                        @endswitch
-                    </div>
-                    
-                    <!-- Status BPKPAD -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Status BPKPAD</label>
-                        @switch($pengajuan->status_bpkpad)
-                            @case(0)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-full justify-center py-2">
-                                    Menunggu
-                                </span>
-                                @break
-                            @case(1)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 w-full justify-center py-2">
-                                    Di Proses
-                                </span>
-                                @break
-                            @case(2)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 w-full justify-center py-2">
-                                    Selesai
-                                </span>
-                                @break
-                            @case(3)
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 w-full justify-center py-2">
-                                    Ditolak
-                                </span>
-                                @break
-                            @default
-                                <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-full justify-center py-2">
-                                    Unknown
-                                </span>
-                        @endswitch
-                    </div>
+                <div class="p-6">
+                    <!-- Status Pengajuan -->
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    @switch($pengajuan->status)
+                        @case(0)
+                            <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-full justify-center py-2">
+                                Draft
+                            </span>
+                            @break
+                        @case(1)
+                            <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 w-full justify-center py-2">
+                                Menunggu
+                            </span>
+                            @break
+                        @case(2)
+                            <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 w-full justify-center py-2">
+                                Revisi
+                            </span>
+                            @break
+                        @case(3)
+                            <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 w-full justify-center py-2">
+                                Disetujui
+                            </span>
+                            @break
+                        @case(4)
+                            <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 w-full justify-center py-2">
+                                Ditolak
+                            </span>
+                            @break
+                        @default
+                            <span class="px-3 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 w-full justify-center py-2">
+                                Unknown
+                            </span>
+                    @endswitch
                 </div>
             </div>
 
@@ -303,7 +254,7 @@
             </div>
 
             <!-- Keterangan -->
-            @if($pengajuan->ket_kepala_skpd || $pengajuan->ket_bpkpad)
+            @if($pengajuan->ket_bpkpad)
             <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
@@ -314,13 +265,6 @@
                     </h3>
                 </div>
                 <div class="p-6 space-y-4">
-                    @if($pengajuan->ket_kepala_skpd)
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Kepala SKPD</label>
-                        <p class="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">{{ $pengajuan->ket_kepala_skpd }}</p>
-                    </div>
-                    @endif
-                    
                     @if($pengajuan->ket_bpkpad)
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">BPKPAD</label>

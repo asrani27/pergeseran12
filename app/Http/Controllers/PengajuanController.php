@@ -90,8 +90,7 @@ class PengajuanController extends Controller
         $n->kode_subkegiatan = $subkegiatan->kode ?? '';
         $n->nama_subkegiatan = $subkegiatan->nama ?? '';
         $n->tahun = date('Y');
-        $n->status_operator = 1;
-        $n->status_kepala_skpd = 0;
+        $n->status = 0;
         $n->save();
 
         return redirect()->route('skpd.pengajuan')->with('success', 'Pengajuan berhasil dibuat!');

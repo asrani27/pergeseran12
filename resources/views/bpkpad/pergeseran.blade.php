@@ -58,14 +58,48 @@
                     <h1 class="text-2xl font-bold mb-2">Detail Pergeseran Anggaran</h1>
                     <p class="text-purple-100">Review dan setujui pergeseran anggaran</p>
                 </div>
-                <a href="{{ route('bpkpad.dashboard') }}"
-                    class="bg-white text-purple-600 hover:bg-purple-50 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    <span>Kembali</span>
-                </a>
+                <div class="flex items-center space-x-3">
+                    <!-- Print Dropdown -->
+                    <div class="relative inline-block">
+                        <button onclick="toggleDropdown('printDropdown')"
+                            class="bg-white text-purple-600 hover:bg-purple-50 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                                </path>
+                            </svg>
+                            <span>Cetak Surat</span>
+                        </button>
+                        <div id="printDropdown"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                            <div class="py-1">
+                                <a href="{{ route('bpkpad.surat.pergeseran', $pengajuan->id) }}" target="_blank"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-file-pdf mr-2 text-red-500"></i>
+                                    Surat Pergeseran
+                                </a>
+                                <a href="{{ route('bpkpad.surat.pernyataan', $pengajuan->id) }}" target="_blank"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-file-pdf mr-2 text-red-500"></i>
+                                    Surat Pernyataan
+                                </a>
+                                <a href="{{ route('bpkpad.surat.keterangan', $pengajuan->id) }}" target="_blank"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-file-pdf mr-2 text-red-500"></i>
+                                    Surat Keterangan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ route('bpkpad.dashboard') }}"
+                        class="bg-white text-purple-600 hover:bg-purple-50 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <span>Kembali</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -99,14 +133,18 @@
                     <p class="text-gray-900 font-medium">{{ $pengajuan->user->name ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Status Kepala SKPD</p>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Status</p>
                     <p class="text-gray-900 font-medium">
-                        @if($pengajuan->status_kepala_skpd == 2)
-                            <span class="text-green-600">Disetujui</span>
-                        @elseif($pengajuan->status_kepala_skpd == 3)
-                            <span class="text-red-600">Ditolak</span>
+                        @if($pengajuan->status == 1)
+                        <span class="text-blue-600">Diproses</span>
+                        @elseif($pengajuan->status == 2)
+                        <span class="text-orange-600">Direvisi</span>
+                        @elseif($pengajuan->status == 3)
+                        <span class="text-green-600">Disetujui</span>
+                        @elseif($pengajuan->status == 4)
+                        <span class="text-red-600">Ditolak</span>
                         @else
-                            <span class="text-yellow-600">Menunggu</span>
+                        <span class="text-gray-600">Belum Dikirim</span>
                         @endif
                     </p>
                 </div>
@@ -387,7 +425,7 @@
                     <p class="text-2xl font-bold text-green-600">{{ $formattedTotalSesudah }}</p>
                 </div>
 
-                @if($pengajuan->status_bpkpad == 1)
+                @if($pengajuan->status == 1)
                 <div class="space-y-2">
                     <button onclick="approvePergeseran()"
                         class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center space-x-2">
@@ -406,7 +444,20 @@
                         <span>Tolak</span>
                     </button>
                 </div>
-                @elseif($pengajuan->status_bpkpad == 2)
+                @elseif($pengajuan->status == 2)
+                <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <div class="flex items-center mb-2">
+                        <div class="bg-orange-500 text-white rounded-full p-2 mr-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-600">Status</span>
+                    </div>
+                    <p class="text-xl font-bold text-orange-600">Direvisi</p>
+                </div>
+                @elseif($pengajuan->status == 3)
                 <div class="bg-green-50 rounded-lg p-4 border border-green-200">
                     <div class="flex items-center mb-2">
                         <div class="bg-green-500 text-white rounded-full p-2 mr-3">
@@ -419,7 +470,7 @@
                     </div>
                     <p class="text-xl font-bold text-green-600">Disetujui</p>
                 </div>
-                @elseif($pengajuan->status_bpkpad == 3)
+                @elseif($pengajuan->status == 4)
                 <div class="bg-red-50 rounded-lg p-4 border border-red-200">
                     <div class="flex items-center mb-2">
                         <div class="bg-red-500 text-white rounded-full p-2 mr-3">
@@ -440,6 +491,23 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
+    // Toggle dropdown visibility
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle('hidden');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('#printDropdown') && 
+            !event.target.closest('button[onclick^="toggleDropdown"]')) {
+            const dropdown = document.getElementById('printDropdown');
+            if (dropdown) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    });
+
     function approvePergeseran() {
         if (confirm('Apakah Anda yakin ingin menyetujui pergeseran ini?')) {
             $.ajax({

@@ -18,9 +18,9 @@ class BpkpadController extends Controller
     public function dashboard()
     {
         // Get all pengajuan from all SKPDs with any status_bpkpad
-        // status_bpkpad: 1 = di proses, 2 = disetujui, 3 = ditolak
+        // status : 1 = di proses, 2 = direvisi, 3 = disetuji, 4 = ditolak
         $pengajuan = Pengajuan::with(['user', 'skpd', 'program', 'kegiatan', 'subkegiatan'])
-            ->whereIn('status_bpkpad', [1, 2, 3]) // Show all BPKPAD statuses
+            ->whereIn('status', [1, 2, 3, 4]) // Show all BPKPAD statuses
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -99,7 +99,7 @@ class BpkpadController extends Controller
         // Get pengajuan details with any BPKPAD status (1, 2, or 3)
         $pengajuan = Pengajuan::with(['user', 'skpd', 'program', 'kegiatan', 'subkegiatan'])
             ->where('id', $id)
-            ->whereIn('status_bpkpad', [1, 2, 3]) // Show pengajuan with any BPKPAD status
+            ->whereIn('status', [1, 2, 3, 4]) // Show pengajuan with any BPKPAD status
             ->firstOrFail();
 
         // Get Sebelum data for this pengajuan
@@ -130,11 +130,11 @@ class BpkpadController extends Controller
 
             // Find pengajuan and verify it has status_bpkpad == 1
             $pengajuan = Pengajuan::where('id', $request->pengajuan_id)
-                ->where('status_bpkpad', 1)
+                ->where('status', 1)
                 ->firstOrFail();
 
             // Update status
-            $pengajuan->status_bpkpad = 2; // Approved by BPKPAD
+            $pengajuan->status = 3; // Approved by BPKPAD
             $pengajuan->save();
 
             return response()->json([
@@ -164,11 +164,11 @@ class BpkpadController extends Controller
 
             // Find pengajuan and verify it has status_bpkpad == 1
             $pengajuan = Pengajuan::where('id', $request->pengajuan_id)
-                ->where('status_bpkpad', 1)
+                ->where('status', 1)
                 ->firstOrFail();
 
             // Update status
-            $pengajuan->status_bpkpad = 3; // Rejected by BPKPAD
+            $pengajuan->status = 4; // Rejected by BPKPAD
             $pengajuan->save();
 
             return response()->json([
@@ -180,6 +180,120 @@ class BpkpadController extends Controller
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Generate PDF for Surat Pergeseran.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function cetakSuratPergeseran($id)
+    {
+        try {
+            // Get pengajuan data (BPKPAD can view all pengajuan)
+            $pengajuan = Pengajuan::with(['user', 'skpd', 'program', 'kegiatan', 'subkegiatan'])
+                ->where('id', $id)
+                ->firstOrFail();
+
+            // Get Sebelum data for this pengajuan
+            $sebelumData = \App\Models\Sebelum::where('pengajuan_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Get Sesudah data for this pengajuan
+            $sesudahData = \App\Models\Sesudah::where('pengajuan_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Generate PDF from view
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.pergeseran', compact('pengajuan', 'sebelumData', 'sesudahData'));
+
+            // Sanitize nomor_surat for filename (replace / and \ with -)
+            $safeNomorSurat = str_replace(['/', '\\'], '-', $pengajuan->nomor_surat);
+
+            // Download PDF
+            return $pdf->stream('surat-pergeseran-' . $safeNomorSurat . '.pdf');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal mencetak surat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Generate PDF for Surat Pernyataan.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function cetakSuratPernyataan($id)
+    {
+        try {
+            // Get pengajuan data (BPKPAD can view all pengajuan)
+            $pengajuan = Pengajuan::with(['user', 'skpd', 'program', 'kegiatan', 'subkegiatan'])
+                ->where('id', $id)
+                ->firstOrFail();
+
+            // Get Sebelum data for this pengajuan
+            $sebelumData = \App\Models\Sebelum::where('pengajuan_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Get Sesudah data for this pengajuan
+            $sesudahData = \App\Models\Sesudah::where('pengajuan_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Generate PDF from view
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.pernyataan', compact('pengajuan', 'sebelumData', 'sesudahData'));
+
+            // Sanitize nomor_surat for filename (replace / and \ with -)
+            $safeNomorSurat = str_replace(['/', '\\'], '-', $pengajuan->nomor_surat);
+
+            // Download PDF
+            return $pdf->stream('surat-pernyataan-' . $safeNomorSurat . '.pdf');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal mencetak surat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Generate PDF for Surat Keterangan.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function cetakSuratKeterangan($id)
+    {
+        try {
+            // Get pengajuan data (BPKPAD can view all pengajuan)
+            $pengajuan = Pengajuan::with(['user', 'skpd', 'program', 'kegiatan', 'subkegiatan'])
+                ->where('id', $id)
+                ->firstOrFail();
+
+            // Get Sebelum data for this pengajuan
+            $sebelumData = \App\Models\Sebelum::where('pengajuan_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Get Sesudah data for this pengajuan
+            $sesudahData = \App\Models\Sesudah::where('pengajuan_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Generate PDF from view
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.keterangan', compact('pengajuan', 'sebelumData', 'sesudahData'));
+
+            // Sanitize nomor_surat for filename (replace / and \ with -)
+            $safeNomorSurat = str_replace(['/', '\\'], '-', $pengajuan->nomor_surat);
+
+            // Download PDF
+            return $pdf->stream('surat-keterangan-' . $safeNomorSurat . '.pdf');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal mencetak surat: ' . $e->getMessage());
         }
     }
 }

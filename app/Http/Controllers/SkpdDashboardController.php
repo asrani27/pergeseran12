@@ -500,7 +500,10 @@ class SkpdDashboardController extends Controller
         $rekeningOptions = \App\Models\Ssh::select('kode_rekening', 'jenis')
             ->distinct()
             ->orderBy('kode_rekening')
-            ->get();
+            ->get()->map(function ($item) {
+                $item->nama_rekening = \App\Models\KodeRekening::where('kode', $item->kode_rekening)->value('nama') ?? 'Nama rekening tidak ditemukan';
+                return $item;
+            });
 
         // Get Sebelum data for this pengajuan
         $sebelumData = \App\Models\Sebelum::where('pengajuan_id', $id)

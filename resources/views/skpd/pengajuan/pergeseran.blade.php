@@ -140,58 +140,68 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @if($sebelumData->count() > 0)
-                                    @foreach($sebelumData as $index => $item)
-                                        @php
-                                            // Get SSH data for spesifikasi display
-                                            $sshData = \App\Models\Ssh::where('kode_barang', $item->kode_komponen)
-                                                ->where('kode_rekening', $item->kode_rekening)
-                                                ->first();
-                                            $uraian = $sshData->uraian_barang ?? $item->kode_komponen;
-                                            
-                                            // Format currency
-                                            $formattedHarga = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
-                                            $formattedHarga->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
-                                            $formattedHargaValue = $formattedHarga->format($item->harga);
-                                            
-                                            // Calculate total koefisien
-                                            $totalKoefisien = 1;
-                                            if ($item->koefisien1 > 0) $totalKoefisien *= $item->koefisien1;
-                                            if ($item->koefisien2 > 0) $totalKoefisien *= $item->koefisien2;
-                                            if ($item->koefisien3 > 0) $totalKoefisien *= $item->koefisien3;
-                                            
-                                            $formattedTotal = $formattedHarga->format($item->total);
-                                        @endphp
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{ $item->kode_rekening }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $item->jenis_ssh }}</td>
-                                            <td class="px-4 py-3 text-sm text-gray-600">{{ $uraian }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{ $item->satuan }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{ $formattedHargaValue }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{ $totalKoefisien }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ $formattedTotal }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
-                                                <button onclick="deleteSebelum({{ $item->id }})"
-                                                    class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                                    {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td colspan="9" class="px-4 py-8 text-center text-sm text-gray-500">
-                                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                @foreach($sebelumData as $index => $item)
+                                @php
+                                // Get SSH data for spesifikasi display
+                                $sshData = \App\Models\Ssh::where('kode_barang', $item->kode_komponen)
+                                ->where('kode_rekening', $item->kode_rekening)
+                                ->first();
+                                $uraian = $sshData->uraian_barang ?? $item->kode_komponen;
+
+                                // Format currency
+                                $formattedHarga = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
+                                $formattedHarga->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
+                                $formattedHargaValue = $formattedHarga->format($item->harga);
+
+                                // Calculate total koefisien
+                                $totalKoefisien = 1;
+                                if ($item->koefisien1 > 0) $totalKoefisien *= $item->koefisien1;
+                                if ($item->koefisien2 > 0) $totalKoefisien *= $item->koefisien2;
+                                if ($item->koefisien3 > 0) $totalKoefisien *= $item->koefisien3;
+
+                                $formattedTotal = $formattedHarga->format($item->total);
+                                @endphp
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{
+                                        $item->kode_rekening }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $item->jenis_ssh }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">{{ $uraian }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{ $item->satuan }}
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{
+                                        $formattedHargaValue }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{
+                                        $totalKoefisien }}</td>
+                                    <td
+                                        class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                                        {{ $formattedTotal }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
+                                        <button onclick="deleteSebelum({{ $item->id }})"
+                                            class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                            {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
                                             </svg>
-                                            <p class="mt-2">Belum ada data pergeseran</p>
-                                            <p class="text-xs">Klik tombol "Tambah" untuk menambahkan data</p>
-                                        </td>
-                                    </tr>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="9" class="px-4 py-8 text-center text-sm text-gray-500">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <p class="mt-2">Belum ada data pergeseran</p>
+                                        <p class="text-xs">Klik tombol "Tambah" untuk menambahkan data</p>
+                                    </td>
+                                </tr>
                                 @endif
                             </tbody>
                         </table>
@@ -264,58 +274,68 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @if(isset($sesudahData) && $sesudahData->count() > 0)
-                                    @foreach($sesudahData as $index => $item)
-                                        @php
-                                            // Get SSH data for spesifikasi display
-                                            $sshData = \App\Models\Ssh::where('kode_barang', $item->kode_komponen)
-                                                ->where('kode_rekening', $item->kode_rekening)
-                                                ->first();
-                                            $uraian = $sshData->uraian_barang ?? $item->kode_komponen;
-                                            
-                                            // Format currency
-                                            $formattedHarga = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
-                                            $formattedHarga->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
-                                            $formattedHargaValue = $formattedHarga->format($item->harga);
-                                            
-                                            // Calculate total koefisien
-                                            $totalKoefisien = 1;
-                                            if ($item->koefisien1 > 0) $totalKoefisien *= $item->koefisien1;
-                                            if ($item->koefisien2 > 0) $totalKoefisien *= $item->koefisien2;
-                                            if ($item->koefisien3 > 0) $totalKoefisien *= $item->koefisien3;
-                                            
-                                            $formattedTotal = $formattedHarga->format($item->total);
-                                        @endphp
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{ $item->kode_rekening }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $item->jenis_ssh }}</td>
-                                            <td class="px-4 py-3 text-sm text-gray-600">{{ $uraian }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{ $item->satuan }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{ $formattedHargaValue }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{ $totalKoefisien }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ $formattedTotal }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
-                                                <button onclick="deleteSesudah({{ $item->id }})"
-                                                    class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                                    {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td colspan="9" class="px-4 py-8 text-center text-sm text-gray-500">
-                                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                @foreach($sesudahData as $index => $item)
+                                @php
+                                // Get SSH data for spesifikasi display
+                                $sshData = \App\Models\Ssh::where('kode_barang', $item->kode_komponen)
+                                ->where('kode_rekening', $item->kode_rekening)
+                                ->first();
+                                $uraian = $sshData->uraian_barang ?? $item->kode_komponen;
+
+                                // Format currency
+                                $formattedHarga = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
+                                $formattedHarga->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
+                                $formattedHargaValue = $formattedHarga->format($item->harga);
+
+                                // Calculate total koefisien
+                                $totalKoefisien = 1;
+                                if ($item->koefisien1 > 0) $totalKoefisien *= $item->koefisien1;
+                                if ($item->koefisien2 > 0) $totalKoefisien *= $item->koefisien2;
+                                if ($item->koefisien3 > 0) $totalKoefisien *= $item->koefisien3;
+
+                                $formattedTotal = $formattedHarga->format($item->total);
+                                @endphp
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{
+                                        $item->kode_rekening }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ $item->jenis_ssh }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">{{ $uraian }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{ $item->satuan }}
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{
+                                        $formattedHargaValue }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">{{
+                                        $totalKoefisien }}</td>
+                                    <td
+                                        class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                                        {{ $formattedTotal }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
+                                        <button onclick="deleteSesudah({{ $item->id }})"
+                                            class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50 {{ $pengajuan->status == 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                            {{ $pengajuan->status == 1 ? 'disabled' : '' }}>
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
                                             </svg>
-                                            <p class="mt-2">Belum ada data pergeseran</p>
-                                            <p class="text-xs">Klik tombol "Tambah" untuk menambahkan data</p>
-                                        </td>
-                                    </tr>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                                @else
+                                <tr>
+                                    <td colspan="9" class="px-4 py-8 text-center text-sm text-gray-500">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <p class="mt-2">Belum ada data pergeseran</p>
+                                        <p class="text-xs">Klik tombol "Tambah" untuk menambahkan data</p>
+                                    </td>
+                                </tr>
                                 @endif
                             </tbody>
                         </table>
@@ -334,21 +354,21 @@
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 @php
-                    // Calculate total from Sebelum data
-                    $totalSebelum = $sebelumData->sum('total');
-                    
-                    // Calculate total from Sesudah data
-                    $totalSesudah = isset($sesudahData) ? $sesudahData->sum('total') : 0;
-                    
-                    // Calculate netral (selisih)
-                    $netral = $totalSebelum - $totalSesudah;
-                    
-                    // Format currency
-                    $formatter = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
-                    $formatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
-                    $formattedTotalSebelum = $formatter->format($totalSebelum);
-                    $formattedTotalSesudah = $formatter->format($totalSesudah);
-                    $formattedNetral = $formatter->format($netral);
+                // Calculate total from Sebelum data
+                $totalSebelum = $sebelumData->sum('total');
+
+                // Calculate total from Sesudah data
+                $totalSesudah = isset($sesudahData) ? $sesudahData->sum('total') : 0;
+
+                // Calculate netral (selisih)
+                $netral = $totalSebelum - $totalSesudah;
+
+                // Format currency
+                $formatter = new \NumberFormatter('id_ID', \NumberFormatter::CURRENCY);
+                $formatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, 'IDR');
+                $formattedTotalSebelum = $formatter->format($totalSebelum);
+                $formattedTotalSesudah = $formatter->format($totalSesudah);
+                $formattedNetral = $formatter->format($netral);
                 @endphp
                 <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
                     <div class="flex items-center mb-2">
@@ -421,7 +441,8 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Pilih Rekening Awal</option>
                         @foreach($rekeningOptions as $rekening)
-                        <option value="{{ $rekening->kode_rekening }}">{{ $rekening->kode_rekening }} - {{
+                        <option value="{{ $rekening->kode_rekening }}">{{ $rekening->kode_rekening }} -{{
+                            $rekening->nama_rekening }} - {{
                             $rekening->jenis }}</option>
                         @endforeach
                     </select>
@@ -491,7 +512,8 @@
     </div>
 
     <!-- Modal Form Tambah Data Sesudah -->
-    <div id="modalFormSesudah" class="fixed inset-0 backdrop-blur-sm bg-white/30 hidden items-center justify-center z-50">
+    <div id="modalFormSesudah"
+        class="fixed inset-0 backdrop-blur-sm bg-white/30 hidden items-center justify-center z-50">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div class="px-6 py-4 rounded-t-xl bg-gradient-to-r from-green-600 to-teal-600">
                 <div class="flex items-center justify-between">
@@ -512,7 +534,8 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         <option value="">Pilih Rekening Baru</option>
                         @foreach($rekeningOptions as $rekening)
-                        <option value="{{ $rekening->kode_rekening }}">{{ $rekening->kode_rekening }} - {{
+                        <option value="{{ $rekening->kode_rekening }}">{{ $rekening->kode_rekening }} -{{
+                            $rekening->nama_rekening }} - {{
                             $rekening->jenis }}</option>
                         @endforeach
                     </select>
